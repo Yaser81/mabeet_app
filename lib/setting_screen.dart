@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
+import 'package:mabeet_app/models/models.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -10,14 +13,21 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool usePin = false;
 
-  final Map<String, TextEditingController> controllers = {
-    'خلود': TextEditingController(text: '2'),
-    'وردة': TextEditingController(text: '1'),
-    'حنان': TextEditingController(text: '3'),
-  };
+  final Map<String, TextEditingController> controllers = {};
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    var wifes = BlocProvider.of<ScheduleCubit>(context).schedule.wivesStay;
+    if (controllers.isEmpty) {
+      for (var wife in wifes) {
+        print('${wife.days}');
+        controllers[wife.name] = TextEditingController(text: '${wife.days}');
+      }
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black87,

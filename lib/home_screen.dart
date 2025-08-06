@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:mabeet_app/models/out_home_model.dart';
-import 'package:mabeet_app/models/schedule_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
+
 import 'package:mabeet_app/setting_screen.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'models/wife_stay_model.dart';
+import 'models/models.dart';
 
 // ignore: must_be_immutable
-class HomeScreen extends StatelessWidget {
-  final DateTime focusedDay = DateTime(2024, 4, 1);
-  final schedule = ScheduleModel(
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  DateTime _focusedDay = DateTime(2024, 4, 1);
+  var colorMap = {};
+  /* final schedule = ScheduleModel(
     wivesStay: [
       WifeStayModel(id: 1, name: 'خلود', color: Color(0xFF4FD1C5), days: 3),
       WifeStayModel(id: 2, name: 'وردة', color: Color(0xFFF597AD), days: 2),
@@ -27,14 +36,10 @@ class HomeScreen extends StatelessWidget {
         to: DateTime(2024, 4, 30),
       ),
     },
-  );
-  var colorMap = {};
-  HomeScreen({super.key}) {
-    colorMap = generateColorMapForMonth(
-      schedule,
-      focusedDay.year,
-      focusedDay.month,
-    );
+  ); */
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -78,116 +83,109 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          TableCalendar(
-            locale: 'en_US',
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: focusedDay,
-            headerVisible: true,
-            headerStyle: HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-              titleTextStyle: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            daysOfWeekStyle: DaysOfWeekStyle(
-              dowTextFormatter: (date, locale) {
-                const arabicDays = ['س', 'خ', 'ن', 'ث', 'ر', 'ح', 'ج'];
-                return arabicDays[date.weekday % 7];
-              },
-              weekdayStyle: TextStyle(color: Colors.black),
-              weekendStyle: TextStyle(color: Colors.black),
-            ),
-            calendarStyle: CalendarStyle(
-              defaultTextStyle: TextStyle(color: Colors.black),
-              weekendTextStyle: TextStyle(color: Colors.black),
-              todayDecoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              defaultDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-              ),
-              outsideDaysVisible: false,
-            ),
-            calendarBuilders: CalendarBuilders(
-              defaultBuilder: (context, day, _) {
-                if (colorMap.isEmpty) {
-                  colorMap = generateColorMapForMonth(
-                    schedule,
-                    focusedDay.year,
-                    focusedDay.month,
-                  );
-                }
-                final color = getColorForDay(day);
-                if (color != null) {
-                  return Container(
-                    margin: EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: color,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '${day.day}',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  );
-                }
-                return null;
-              },
-              todayBuilder: (context, day, _) {
-                return Container(
-                  margin: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
+          BlocConsumer<ScheduleCubit, ScheduleState>(
+            listener: (context, state) {
+              final schedule = BlocProvider.of<ScheduleCubit>(context).schedule;
+              colorMap = generateColorMapForMonth(
+                schedule,
+                _focusedDay.year,
+                _focusedDay.month,
+              );
+              // TODO: implement listener
+            },
+            builder: (context, state) {
+              return TableCalendar(
+                locale: 'en_US',
+                firstDay: DateTime.utc(2020, 1, 1),
+                lastDay: DateTime.utc(2030, 12, 31),
+                focusedDay: _focusedDay,
+                headerVisible: true,
+                headerStyle: HeaderStyle(
+                  formatButtonVisible: false,
+                  titleCentered: true,
+                  titleTextStyle: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                daysOfWeekStyle: DaysOfWeekStyle(
+                  dowTextFormatter: (date, locale) {
+                    const arabicDays = ['س', 'خ', 'ن', 'ث', 'ر', 'ح', 'ج'];
+                    return arabicDays[date.weekday % 7];
+                  },
+                  weekdayStyle: TextStyle(color: Colors.black),
+                  weekendStyle: TextStyle(color: Colors.black),
+                ),
+                calendarStyle: CalendarStyle(
+                  defaultTextStyle: TextStyle(color: Colors.black),
+                  weekendTextStyle: TextStyle(color: Colors.black),
+                  todayDecoration: BoxDecoration(
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '${day.day}',
-                    style: TextStyle(color: Colors.black),
+                  defaultDecoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                );
-              },
-            ),
+                  outsideDaysVisible: false,
+                ),
+                calendarBuilders: CalendarBuilders(
+                  defaultBuilder: (context, day, _) {
+                    if (colorMap.isEmpty) {
+                      colorMap = generateColorMapForMonth(
+                        BlocProvider.of<ScheduleCubit>(context).schedule,
+                        _focusedDay.year,
+                        _focusedDay.month,
+                      );
+                    }
+                    final color = getColorForDay(day);
+                    if (color != null) {
+                      return Container(
+                        margin: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${day.day}',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      );
+                    }
+                    return null;
+                  },
+                  todayBuilder: (context, day, _) {
+                    return Container(
+                      margin: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    );
+                  },
+                ),
+                onPageChanged: (focusedDay) {
+                  colorMap = {};
+                  colorMap = generateColorMapForMonth(
+                    BlocProvider.of<ScheduleCubit>(context).schedule,
+                    focusedDay.year,
+                    focusedDay.month,
+                  );
+                  setState(() {
+                    _focusedDay = focusedDay;
+                  });
+                },
+              );
+            },
           ),
           const SizedBox(height: 24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              children: [
-                for (var wifeStay in schedule.wivesStay)
-                  buildLegendItem(color: wifeStay.color, label: wifeStay.name),
-
-                buildLegendItem(color: Color(0xFFD3D3D3), label: 'خارج المنزل'),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildLegendItem({required Color color, required String label}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-          ),
-          Flexible(flex: 4, child: SizedBox(width: 25)),
-          Text(label, style: TextStyle(fontSize: 20)),
+          WifeList(),
         ],
       ),
     );
@@ -198,41 +196,6 @@ class HomeScreen extends StatelessWidget {
         Colors.transparent;
   }
 
-  /// تحديد لون اليوم حسب جدول المستخدمين
-  /*  Color? getColorForDay(DateTime day) {
-    final khuloodDays = [DateTime(2024, 4, 3), DateTime(2024, 4, 5)];
-    final wardahDays = [DateTime(2024, 4, 6), DateTime(2024, 4, 7)];
-    final hananDays = [
-      DateTime(2024, 4, 10),
-      DateTime(2024, 4, 11),
-      DateTime(2024, 4, 12),
-      DateTime(2024, 4, 13),
-      DateTime(2024, 4, 14),
-      DateTime(2024, 4, 17),
-      DateTime(2024, 4, 18),
-      DateTime(2024, 4, 21),
-      DateTime(2024, 4, 22),
-      DateTime(2024, 4, 23),
-      DateTime(2024, 4, 24),
-      DateTime(2024, 4, 25),
-      DateTime(2024, 4, 26),
-      DateTime(2024, 4, 27),
-      DateTime(2024, 4, 28),
-    ];
-    final outsideDay = DateTime(2024, 4, 30);
-
-    if (khuloodDays.any((d) => isSameDay(d, day))) {
-      return Color(0xFF4FD1C5); // سماوي
-    } else if (wardahDays.any((d) => isSameDay(d, day))) {
-      return Color(0xFFF597AD); // وردي
-    } else if (hananDays.any((d) => isSameDay(d, day))) {
-      return Color(0xFFB4A9FF); // بنفسجي
-    } else if (isSameDay(outsideDay, day)) {
-      return Color(0xFFD3D3D3); // رمادي
-    }
-    return null;
-  }
- */
   Map<DateTime, Color> generateColorMapForMonth(
     ScheduleModel schedule,
     int year,
@@ -280,8 +243,64 @@ class HomeScreen extends StatelessWidget {
     /// add out of home days
     return colorMap;
   }
+}
 
-  bool isSameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
+class WifeList extends StatelessWidget {
+  const WifeList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: BlocConsumer<ScheduleCubit, ScheduleState>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          print('$state');
+          final wifes = BlocProvider.of<ScheduleCubit>(
+            context,
+          ).schedule.wivesStay;
+          return Column(
+            children: [
+              for (var wife in wifes)
+                WifeLabel(color: wife.color, label: wife.name),
+
+              WifeLabel(color: Color(0xFFD3D3D3), label: 'خارج المنزل'),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class WifeLabel extends StatelessWidget {
+  const WifeLabel({super.key, required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 150,
+            child: Text(label, style: TextStyle(fontSize: 20)),
+          ),
+          Flexible(flex: 4, child: SizedBox(width: 100)),
+          Container(
+            width: 100,
+            height: 40,
+
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
