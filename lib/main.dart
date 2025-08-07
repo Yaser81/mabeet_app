@@ -54,7 +54,14 @@ class MyApp extends StatelessWidget {
         ],
         title: 'تطبيق مبيت',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4FD1C5)),
+          primaryColor: Color(0xFF4FD1C5),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+            ),
+          ),
           // تعيين الخط الافتراضي للتطبيق كله
           textTheme: GoogleFonts.notoNaskhArabicTextTheme(
             Theme.of(context).textTheme,

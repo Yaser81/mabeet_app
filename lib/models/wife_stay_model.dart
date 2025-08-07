@@ -4,7 +4,7 @@ class WifeStayModel {
   final int id;
   final String name;
   final Color color;
-  final int days;
+  int days;
 
   WifeStayModel({
     required this.id,

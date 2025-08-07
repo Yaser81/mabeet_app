@@ -46,10 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Color(0xFF4FD1C5),
+        onPressed: () {},
+        child: Icon(Icons.add),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Icon(Icons.arrow_back_ios, color: Colors.black),
+
         actions: [
           IconButton(
             color: Colors.black,
@@ -184,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 100),
           WifeList(),
         ],
       ),

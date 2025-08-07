@@ -13,6 +13,13 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     emit(ScheduleUpdate());
   }
 
+  void updateWifeStays(Map<String, int> wifes) {
+    for (var wife in schedule.wivesStay) {
+      wife.days = wifes[wife.name]!;
+    }
+    emit(ScheduleUpdate());
+  }
+
   void addOuthome(OutHomeModel outDuration) {
     schedule.outHomeDays['${outDuration.from.year}${outDuration.from.month}'] =
         outDuration;

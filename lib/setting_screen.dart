@@ -100,6 +100,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
+            Center(
+              child: ElevatedButton(
+                child: const Text('حفظ', style: TextStyle(fontSize: 16)),
+
+                onPressed: () {
+                  Map<String, int> wifesUpdatedData = {};
+                  for (var key in controllers.keys) {
+                    wifesUpdatedData[key] = int.parse(controllers[key]!.text);
+                  }
+                  BlocProvider.of<ScheduleCubit>(
+                    context,
+                  ).updateWifeStays(wifesUpdatedData);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
           ],
         ),
       ),
