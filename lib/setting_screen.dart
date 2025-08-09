@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
-import 'package:mabeet_app/models/models.dart';
+
+import 'widgets/cutom_elevated_button.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -24,13 +25,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     var wifes = BlocProvider.of<ScheduleCubit>(context).schedule.wivesStay;
     if (controllers.isEmpty) {
       for (var wife in wifes) {
-        print('${wife.days}');
+        debugPrint('${wife.days}');
         controllers[wife.name] = TextEditingController(text: '${wife.days}');
       }
     }
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black87,
+        // backgroundColor: Colors.black87,
         title: const Text('الإعدادات', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -100,10 +101,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ],
             ),
+            SizedBox(height: 50),
             Center(
-              child: ElevatedButton(
+              child: CustomElevatedButton(
                 child: const Text('حفظ', style: TextStyle(fontSize: 16)),
-
                 onPressed: () {
                   Map<String, int> wifesUpdatedData = {};
                   for (var key in controllers.keys) {

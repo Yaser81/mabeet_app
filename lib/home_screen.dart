@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mabeet_app/add_wife_screen.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 
 import 'package:mabeet_app/setting_screen.dart';
@@ -37,9 +38,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     },
   ); */
+  DateTime? _randStart;
+  DateTime? _rangeEnd;
+  DateTime? _selectedDay;
   @override
   void initState() {
     super.initState();
+    _selectedDay = _focusedDay;
   }
 
   @override
@@ -47,17 +52,23 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0xFF4FD1C5),
-        onPressed: () {},
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => AddWifeScreen()));
+        },
         child: Icon(Icons.add),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 0,
 
         actions: [
           IconButton(
-            color: Colors.black,
+            color: Colors.white,
             onPressed: () {
               Navigator.of(
                 context,
@@ -74,13 +85,14 @@ class _HomeScreenState extends State<HomeScreen> {
               'جدولي',
               style: TextStyle(
                 fontSize: 20,
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            SizedBox(height: 5),
             Text(
               'My Schedule',
-              style: TextStyle(color: Colors.grey, fontSize: 14),
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
           ],
         ),
@@ -96,7 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 _focusedDay.year,
                 _focusedDay.month,
               );
-              // TODO: implement listener
             },
             builder: (context, state) {
               return TableCalendar(
@@ -175,6 +186,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
+                rangeStartDay: _randStart,
+                rangeEndDay: _rangeEnd,
+                rangeSelectionMode: RangeSelectionMode.toggledOn,
+                selectedDayPredicate: (day) => isSameDay(day, _selectedDay!),
+                onDaySelected: (selectedDay, focusedDay) {
+                  setState(() {
+                    _focusedDay = focusedDay;
+                    _selectedDay = selectedDay;
+                  });
+                },
+                onRangeSelected: (start, end, focusedDay) {
+                  setState(() {
+                    _selectedDay = start;
+                    _focusedDay = focusedDay;
+                    _randStart = start;
+                    _rangeEnd = end;
+                  });
+                },
                 onPageChanged: (focusedDay) {
                   colorMap = {};
                   colorMap = generateColorMapForMonth(
@@ -196,6 +225,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  bool isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
   Color? getColorForDay(DateTime day) {
     return colorMap[DateTime(day.year, day.month, day.day)] ??
         Colors.transparent;
@@ -260,7 +291,7 @@ class WifeList extends StatelessWidget {
       child: BlocConsumer<ScheduleCubit, ScheduleState>(
         listener: (context, state) {},
         builder: (context, state) {
-          print('$state');
+          debugPrint('$state');
           final wifes = BlocProvider.of<ScheduleCubit>(
             context,
           ).schedule.wivesStay;
