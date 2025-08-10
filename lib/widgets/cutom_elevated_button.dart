@@ -17,12 +17,12 @@ class CustomElevatedButton extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.6,
       child: ElevatedButton(
         onPressed: onPressed,
-        child: child,
         style: ElevatedButton.styleFrom(
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadiusGeometry.circular(5),
           ),
         ),
+        child: child,
       ),
     );
   }
