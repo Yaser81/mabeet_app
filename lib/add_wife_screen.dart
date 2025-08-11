@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
+import 'package:mabeet_app/models/wife_model.dart';
 import 'package:mabeet_app/widgets/custom_text_from_field.dart';
 
 class AddWifeScreen extends StatefulWidget {
@@ -36,7 +37,7 @@ class AddWifeView extends StatefulWidget {
 }
 
 class _AddWifeViewState extends State<AddWifeView> {
-  Color selectedColor = Colors.green; // Initial color
+  Color _selectedColor = Colors.green; // Initial color
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late String _wifeName;
   late int _days;
@@ -93,8 +94,8 @@ class _AddWifeViewState extends State<AddWifeView> {
                 width: MediaQuery.of(context).size.width * 0.9,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: selectedColor,
-                    foregroundColor: selectedColor.computeLuminance() < 0.5
+                    backgroundColor: _selectedColor,
+                    foregroundColor: _selectedColor.computeLuminance() < 0.5
                         ? Colors.white
                         : Colors.black,
                     shape: BeveledRectangleBorder(
@@ -104,10 +105,10 @@ class _AddWifeViewState extends State<AddWifeView> {
                   onPressed: () async {
                     final newColor = await showColorPickerDialog(
                       context,
-                      selectedColor,
+                      _selectedColor,
                     );
                     setState(() {
-                      selectedColor = newColor;
+                      _selectedColor = newColor;
                     });
                   },
                   child: Text('اضغط هنا لاختيار لون الزوجة'),
@@ -120,11 +121,26 @@ class _AddWifeViewState extends State<AddWifeView> {
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      BlocProvider.of<ScheduleCubit>(context).addWife(
-                        wifeName: _wifeName,
+                      _formKey.currentState!.save();
+
+                      WifeModel newWife = WifeModel(
+                        name: _wifeName,
+                        color: _selectedColor,
                         days: _days,
-                        color: selectedColor,
                       );
+                      try {
+                        BlocProvider.of<ScheduleCubit>(
+                          context,
+                        ).addWife(newWife: newWife);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('تمت عملية الاضافة بنجاح')),
+                        );
+                        _formKey.currentState!.reset();
+                      } catch (e) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(

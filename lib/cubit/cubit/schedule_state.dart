@@ -11,6 +11,6 @@ final class ScheduleInitial extends ScheduleState {
   const ScheduleInitial(ScheduleModel? schedule);
 }
 
-final class ScheduleUpdate extends ScheduleState {
-  
-}
+final class ScheduleProcess extends ScheduleState {}
+
+final class ScheduleUpdate extends ScheduleState {}

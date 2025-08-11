@@ -263,11 +263,17 @@ class _HomeScreenState extends State<HomeScreen> {
         .where((d) => !outHomeDates.contains(d))
         .toList();
     int index = 0;
-    while (index < validDays.length) {
-      for (var wife in schedule.wives.entries) {
-        for (int i = 0; i < wife.value.days && index < validDays.length; i++) {
-          colorMap[validDays[index]] = wife.value.color;
-          index++;
+    if (schedule.wives.isNotEmpty) {
+      while (index < validDays.length) {
+        for (var wife in schedule.wives.entries) {
+          for (
+            int i = 0;
+            i < wife.value.days && index < validDays.length;
+            i++
+          ) {
+            colorMap[validDays[index]] = wife.value.color;
+            index++;
+          }
         }
       }
     }

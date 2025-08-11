@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mabeet_app/add_wife_screen.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 import 'package:mabeet_app/home_screen.dart';
 
@@ -11,9 +10,9 @@ import 'models/models.dart';
 void main() {
   final ScheduleModel scheduleModel = ScheduleModel(
     wives: {
-      'خلود': WifeModel(name: 'خلود', color: Color(0xFF4FD1C5), days: 4),
-      'وردة': WifeModel(name: 'وردة', color: Color(0xFFF597AD), days: 5),
-      'حنان': WifeModel(name: 'حنان', color: Color(0xFFB4A9FF), days: 1),
+      // 'خلود': WifeModel(name: 'خلود', color: Color(0xFF4FD1C5), days: 4),
+      /*'وردة': WifeModel(name: 'وردة', color: Color(0xFFF597AD), days: 5),
+      'حنان': WifeModel(name: 'حنان', color: Color(0xFFB4A9FF), days: 1), */
     },
     outHomeDays: {
       "2025-07": OutHomeModel(
@@ -83,7 +82,7 @@ class MyApp extends StatelessWidget {
 
           // تعيين الخط لعناصر واجهة المستخدم الثانوية
         ),
-        home: AddWifeScreen(),
+        home: HomeScreen(),
       ),
     );
   }

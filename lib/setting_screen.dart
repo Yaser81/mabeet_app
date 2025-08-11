@@ -112,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   }
                   BlocProvider.of<ScheduleCubit>(
                     context,
-                  ).updateWifeStays(wifesUpdatedData);
+                  ).updateWives(wifesUpdatedData);
                   Navigator.of(context).pop();
                 },
               ),
