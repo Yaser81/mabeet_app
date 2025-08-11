@@ -264,9 +264,9 @@ class _HomeScreenState extends State<HomeScreen> {
         .toList();
     int index = 0;
     while (index < validDays.length) {
-      for (var wife in schedule.wivesStay) {
-        for (int i = 0; i < wife.days && index < validDays.length; i++) {
-          colorMap[validDays[index]] = wife.color;
+      for (var wife in schedule.wives.entries) {
+        for (int i = 0; i < wife.value.days && index < validDays.length; i++) {
+          colorMap[validDays[index]] = wife.value.color;
           index++;
         }
       }
@@ -292,12 +292,10 @@ class WifeList extends StatelessWidget {
         listener: (context, state) {},
         builder: (context, state) {
           debugPrint('$state');
-          final wifes = BlocProvider.of<ScheduleCubit>(
-            context,
-          ).schedule.wivesStay;
+          final wifes = BlocProvider.of<ScheduleCubit>(context).schedule.wives;
           return Column(
             children: [
-              for (var wife in wifes)
+              for (var wife in wifes.values)
                 WifeLabel(color: wife.color, label: wife.name),
 
               WifeLabel(color: Color(0xFFD3D3D3), label: 'خارج المنزل'),

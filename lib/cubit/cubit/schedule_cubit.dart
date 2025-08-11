@@ -1,20 +1,21 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mabeet_app/models/models.dart';
 
 part 'schedule_state.dart';
 
 class ScheduleCubit extends Cubit<ScheduleState> {
-  ScheduleModel schedule = ScheduleModel(wivesStay: [], outHomeDays: {});
+  ScheduleModel schedule = ScheduleModel(wives: {}, outHomeDays: {});
 
   ScheduleCubit(this.schedule) : super(ScheduleInitial(schedule));
-  void addWifeStay(WifeStayModel wife) {
-    schedule.wivesStay.add(wife);
+  void addWife({String? wifeName, int? days, Color? color}) {
+    //  schedule.wivesStay.add(wife);
     emit(ScheduleUpdate());
   }
 
   void updateWifeStays(Map<String, int> wifes) {
-    for (var wife in schedule.wivesStay) {
+    for (var wife in schedule.wives.values) {
       wife.days = wifes[wife.name]!;
     }
     emit(ScheduleUpdate());

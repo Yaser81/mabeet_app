@@ -22,9 +22,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var wifes = BlocProvider.of<ScheduleCubit>(context).schedule.wivesStay;
+    var wifes = BlocProvider.of<ScheduleCubit>(context).schedule.wives;
     if (controllers.isEmpty) {
-      for (var wife in wifes) {
+      for (var wife in wifes.values) {
         debugPrint('${wife.days}');
         controllers[wife.name] = TextEditingController(text: '${wife.days}');
       }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
+import 'package:mabeet_app/widgets/custom_text_from_field.dart';
 
 class AddWifeScreen extends StatefulWidget {
   const AddWifeScreen({super.key});
@@ -35,68 +38,65 @@ class AddWifeView extends StatefulWidget {
 class _AddWifeViewState extends State<AddWifeView> {
   Color selectedColor = Colors.green; // Initial color
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late String _wifeName;
+  late int _days;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-      child: Column(
-        children: [
-          Form(
-            key: _formKey,
-            child: TextFormField(
-              decoration: InputDecoration(
-                label: Text('اسم الزوجة'),
-                hint: Text('ادخل اسم الزوجة'),
-                border: OutlineInputBorder(),
-                // Border color when focused
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).primaryColor,
-                    width: 2.0,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-          TextFormField(
-            keyboardType: TextInputType.numberWithOptions(),
-            decoration: InputDecoration(
-              label: Text('عدد الأيام'),
-              hint: Text('أدخل عدد الايام من 1 الى 7'),
-              border: OutlineInputBorder(),
-              // Border color when focused
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).primaryColor,
-                  width: 2.0,
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 20),
-
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        child: Form(
+          key: _formKey,
+          child: Column(
             children: [
-              Flexible(
-                flex: 3,
-                child: Container(
-                  height: 50,
-
-                  decoration: BoxDecoration(
-                    color: selectedColor,
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
+              CustomTextFormField(
+                labelText: 'اسم الزوجة',
+                hintText: 'أدخل اسم الزوجة',
+                perfixIcon: Icon(
+                  Icons.person,
+                  color: Theme.of(context).primaryColor,
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'اسم الزوجة مطلوب';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) => _wifeName = newValue!,
               ),
-              SizedBox(width: 3),
+              CustomTextFormField(
+                labelText: 'عدد الأيام',
+                hintText: 'أدخل عدد الأيام من 1 إلى 7',
+                perfixIcon: Icon(
+                  Icons.elderly,
+                  color: Theme.of(context).primaryColor,
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'عدد الايام مطلوب';
+                  }
+                  int? tryDays = int.tryParse(value);
+                  if (tryDays == null || tryDays > 7 || tryDays < 1) {
+                    return 'عدد الأيام يجب أن يكون بين 1 و 7';
+                  }
+                  return null;
+                },
+                onSaved: (newValue) {
+                  _days = int.tryParse(newValue!)!;
+                },
+              ),
+
               SizedBox(
                 height: 50,
+                width: MediaQuery.of(context).size.width * 0.9,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: selectedColor,
+                    foregroundColor: selectedColor.computeLuminance() < 0.5
+                        ? Colors.white
+                        : Colors.black,
                     shape: BeveledRectangleBorder(
                       borderRadius: BorderRadiusGeometry.circular(5),
                     ),
@@ -110,25 +110,33 @@ class _AddWifeViewState extends State<AddWifeView> {
                       selectedColor = newColor;
                     });
                   },
-                  child: Text('تحديد اللون'),
+                  child: Text('اضغط هنا لاختيار لون الزوجة'),
+                ),
+              ),
+              SizedBox(height: 20),
+              SizedBox(
+                width: 400,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      BlocProvider.of<ScheduleCubit>(context).addWife(
+                        wifeName: _wifeName,
+                        days: _days,
+                        color: selectedColor,
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorScheme.primary, // ← لون الخلفية
+                    foregroundColor: colorScheme.onPrimary, // ← لون النص
+                  ),
+                  child: Text('حفظ'),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 20),
-          SizedBox(
-            width: 400,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () async {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary, // ← لون الخلفية
-                foregroundColor: colorScheme.onPrimary, // ← لون النص
-              ),
-              child: Text('إضافة'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

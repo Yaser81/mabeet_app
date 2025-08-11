@@ -30,7 +30,7 @@ class CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(top: 16, bottom: 16),
       child: TextFormField(
         validator: validator,
         keyboardType: keyboardType,
@@ -40,7 +40,12 @@ class CustomTextFormField extends StatelessWidget {
           prefixIcon: perfixIcon,
           labelText: labelText,
           hintText: hintText,
-          border: OutlineInputBorder(),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(
+              color: Theme.of(context).primaryColor,
+              width: 2.0,
+            ),
+          ),
         ),
         onChanged: onChanged,
         onSaved: onSaved,
