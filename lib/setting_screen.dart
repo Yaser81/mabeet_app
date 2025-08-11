@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 
+import 'core/app_dialog.dart';
 import 'widgets/cutom_elevated_button.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -23,12 +24,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     var wifes = BlocProvider.of<ScheduleCubit>(context).schedule.wives;
-    if (controllers.isEmpty) {
+    if (controllers.isEmpty && wifes.isNotEmpty) {
       for (var wife in wifes.values) {
         debugPrint('${wife.days}');
         controllers[wife.name] = TextEditingController(text: '${wife.days}');
       }
     }
+
     return Scaffold(
       appBar: AppBar(
         // backgroundColor: Colors.black87,
@@ -81,6 +83,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(width: 10),
+                    IconButton(
+                      onPressed: () {
+                        AppDialogs.confirmAction(
+                          context: context,
+                          title: 'تأكيد الحذف',
+                          message: 'هل تريد حذف هذا العنصر نهائيًا؟',
+                          confirmText: 'حذف',
+                          cancelText: 'إلغاء',
+                          confirmColor: Colors.green,
+                          onConfirm: () {
+                            // تنفيذ عملية الحذف
+                            BlocProvider.of<ScheduleCubit>(
+                              context,
+                            ).deleteWife(wifeName: entry.key);
+                            setState(() {
+                              controllers.remove(entry.key);
+                            });
+                            print('تم الحذف');
+                          },
+                          onCancel: () {
+                            // عملية الإلغاء
+                            print('تم الإلغاء');
+                          },
+                        );
+                      },
+                      icon: Icon(Icons.delete),
+                    ),
                   ],
                 ),
               );
@@ -94,7 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     setState(() => usePin = val);
                   },
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 5),
                 const Text(
                   'القفل باستخدام رمز الدخول',
                   style: TextStyle(fontSize: 16),

@@ -31,6 +31,16 @@ class ScheduleCubit extends Cubit<ScheduleState> {
     emit(ScheduleUpdate());
   }
 
+  void deleteWife({String wifeName = ''}) {
+    if (wifeName.isNotEmpty) {
+      if (schedule.wives.containsKey(wifeName)) {
+        emit(ScheduleProcess());
+        schedule.wives.remove(wifeName);
+        emit(ScheduleUpdate());
+      }
+    }
+  }
+
   void addOuthome(OutHomeModel outDuration) {
     schedule.outHomeDays['${outDuration.from.year}${outDuration.from.month}'] =
         outDuration;

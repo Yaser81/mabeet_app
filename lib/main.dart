@@ -10,7 +10,7 @@ import 'models/models.dart';
 void main() {
   final ScheduleModel scheduleModel = ScheduleModel(
     wives: {
-      // 'خلود': WifeModel(name: 'خلود', color: Color(0xFF4FD1C5), days: 4),
+      'خلود': WifeModel(name: 'خلود', color: Color(0xFF4FD1C5), days: 4),
       /*'وردة': WifeModel(name: 'وردة', color: Color(0xFFF597AD), days: 5),
       'حنان': WifeModel(name: 'حنان', color: Color(0xFFB4A9FF), days: 1), */
     },
@@ -69,6 +69,9 @@ class MyApp extends StatelessWidget {
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
             ),
+          ),
+          iconButtonTheme: IconButtonThemeData(
+            style: IconButton.styleFrom(foregroundColor: colorScheme.primary),
           ),
           // تعيين الخط الافتراضي للتطبيق كله
           textTheme: GoogleFonts.notoNaskhArabicTextTheme(
