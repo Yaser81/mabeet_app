@@ -18,8 +18,8 @@ class CustomElevatedButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          shape: BeveledRectangleBorder(
-            borderRadius: BorderRadiusGeometry.circular(5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(12),
           ),
         ),
         child: child,

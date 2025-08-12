@@ -5,6 +5,8 @@ import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 import 'package:mabeet_app/models/wife_model.dart';
 import 'package:mabeet_app/widgets/custom_text_from_field.dart';
 
+import 'core/app_dialog.dart';
+
 class AddWifeScreen extends StatefulWidget {
   const AddWifeScreen({super.key});
 
@@ -71,7 +73,7 @@ class _AddWifeViewState extends State<AddWifeView> {
                 labelText: 'عدد الأيام',
                 hintText: 'أدخل عدد الأيام من 1 إلى 7',
                 perfixIcon: Icon(
-                  Icons.elderly,
+                  Icons.numbers_rounded,
                   color: Theme.of(context).primaryColor,
                 ),
                 validator: (value) {
@@ -98,8 +100,8 @@ class _AddWifeViewState extends State<AddWifeView> {
                     foregroundColor: _selectedColor.computeLuminance() < 0.5
                         ? Colors.white
                         : Colors.black,
-                    shape: BeveledRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadiusGeometry.circular(12),
                     ),
                   ),
                   onPressed: () async {
@@ -116,7 +118,7 @@ class _AddWifeViewState extends State<AddWifeView> {
               ),
               SizedBox(height: 20),
               SizedBox(
-                width: 400,
+                width: MediaQuery.of(context).size.width * 0.9,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
@@ -132,14 +134,19 @@ class _AddWifeViewState extends State<AddWifeView> {
                         BlocProvider.of<ScheduleCubit>(
                           context,
                         ).addWife(newWife: newWife);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('تمت عملية الاضافة بنجاح')),
+
+                        AppDialogs.showAutoSuccess(
+                          context: context,
+                          message: 'تمت عملية الإضافة بنجاح',
+                          autoHideSeconds: 3,
                         );
                         _formKey.currentState!.reset();
                       } catch (e) {
-                        ScaffoldMessenger.of(
-                          context,
-                        ).showSnackBar(SnackBar(content: Text(e.toString())));
+                        AppDialogs.showError(
+                          context: context,
+                          title: 'خطأ',
+                          message: e.toString(),
+                        );
                       }
                     }
                   },

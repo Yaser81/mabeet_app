@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 
+import 'add_wife_screen.dart';
 import 'core/app_dialog.dart';
 import 'widgets/cutom_elevated_button.dart';
 
@@ -16,6 +17,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool usePin = false;
 
   final Map<String, TextEditingController> controllers = {};
+  late bool _isSelected = false;
   @override
   void initState() {
     super.initState();
@@ -33,7 +35,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Colors.black87,
         title: const Text('الإعدادات', style: TextStyle(color: Colors.white)),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -44,7 +45,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
           },
         ),
       ),
-      backgroundColor: const Color(0xFFF9F9F9),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        onPressed: () {
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => AddWifeScreen()));
+        },
+      ),
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -58,60 +68,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ...controllers.entries.map((entry) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        entry.key,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 60,
-                      child: TextField(
-                        controller: entry.value,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(6),
-                            borderSide: const BorderSide(color: Colors.grey),
+                child: GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      _isSelected = !_isSelected;
+                    });
+                  },
+
+                  child: Container(
+                    padding: EdgeInsets.all(12),
+                    decoration: _isSelected
+                        ? BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.green[50],
+                          )
+                        : BoxDecoration(),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            entry.key,
+                            style: const TextStyle(fontSize: 16),
                           ),
                         ),
-                      ),
+                        SizedBox(
+                          width: 60,
+                          child: TextField(
+                            controller: entry.value,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            decoration: InputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(6),
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        IconButton(
+                          onPressed: !_isSelected
+                              ? null
+                              : () {
+                                  AppDialogs.confirmAction(
+                                    context: context,
+                                    title: 'تأكيد الحذف',
+                                    message:
+                                        'هل تريد حذف معلومات الزوجة نهائياً؟',
+                                    confirmText: 'حذف',
+                                    cancelText: 'إلغاء',
+                                    confirmColor: Colors.green,
+
+                                    icon: Icons.delete_forever,
+                                    onConfirm: () {
+                                      // تنفيذ عملية الحذف
+                                      BlocProvider.of<ScheduleCubit>(
+                                        context,
+                                      ).deleteWife(wifeName: entry.key);
+                                      setState(() {
+                                        controllers.remove(entry.key);
+                                      });
+                                      print('تم الحذف');
+                                    },
+                                    onCancel: () {
+                                      // عملية الإلغاء
+                                      print('تم الإلغاء');
+                                    },
+                                  );
+                                },
+                          icon: Icon(Icons.delete),
+                        ),
+                      ],
                     ),
-                    SizedBox(width: 10),
-                    IconButton(
-                      onPressed: () {
-                        AppDialogs.confirmAction(
-                          context: context,
-                          title: 'تأكيد الحذف',
-                          message: 'هل تريد حذف هذا العنصر نهائيًا؟',
-                          confirmText: 'حذف',
-                          cancelText: 'إلغاء',
-                          confirmColor: Colors.green,
-                          onConfirm: () {
-                            // تنفيذ عملية الحذف
-                            BlocProvider.of<ScheduleCubit>(
-                              context,
-                            ).deleteWife(wifeName: entry.key);
-                            setState(() {
-                              controllers.remove(entry.key);
-                            });
-                            print('تم الحذف');
-                          },
-                          onCancel: () {
-                            // عملية الإلغاء
-                            print('تم الإلغاء');
-                          },
-                        );
-                      },
-                      icon: Icon(Icons.delete),
-                    ),
-                  ],
+                  ),
                 ),
               );
             }),
