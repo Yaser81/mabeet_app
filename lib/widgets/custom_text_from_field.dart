@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
   final String? hintText;
+  final String? initialValue;
 
   final TextInputType? keyboardType;
   final bool obscureText;
@@ -12,11 +13,10 @@ class CustomTextFormField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
   final FormFieldSetter<String>? onSaved;
 
-  CustomTextFormField({
+  const CustomTextFormField({
     super.key,
-
     required this.labelText,
-
+    this.initialValue,
     this.hintText,
     this.keyboardType,
     this.obscureText = false,
@@ -32,6 +32,7 @@ class CustomTextFormField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 16, bottom: 16),
       child: TextFormField(
+        initialValue: initialValue,
         validator: validator,
         keyboardType: keyboardType,
         obscureText: obscureText,

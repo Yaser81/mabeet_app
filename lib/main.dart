@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mabeet_app/add_out_home_screen.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 import 'package:mabeet_app/home_screen.dart';
 
@@ -15,16 +16,16 @@ void main() {
       'حنان': WifeModel(name: 'حنان', color: Color(0xFFB4A9FF), days: 1), */
     },
     outHomeDays: {
-      "2025-07": OutHomeModel(
+      /*  "2025-07": OutHomeModel(
         id: "2025-07",
         from: DateTime(2024, 4, 1),
         to: DateTime(2024, 4, 3),
       ),
-      "": OutHomeModel(
-        id: '2',
+      "2024-04": OutHomeModel(
+        id: '2024-04',
         from: DateTime(2024, 4, 15),
         to: DateTime(2024, 4, 30),
-      ),
+      ), */
     },
   );
   runApp(MyApp(scheduleModel: scheduleModel));
@@ -70,6 +71,10 @@ class MyApp extends StatelessWidget {
               foregroundColor: colorScheme.onPrimary,
             ),
           ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            foregroundColor: colorScheme.onPrimary,
+            backgroundColor: colorScheme.primary,
+          ),
           iconButtonTheme: IconButtonThemeData(
             style: IconButton.styleFrom(foregroundColor: colorScheme.primary),
           ),
@@ -85,7 +90,10 @@ class MyApp extends StatelessWidget {
 
           // تعيين الخط لعناصر واجهة المستخدم الثانوية
         ),
-        home: HomeScreen(),
+        home: HomeScreen() /*   AddOutHomeScreen(
+          startDate: DateTime(2025, 04, 05),
+          endDate: DateTime(2025, 11, 06),
+        ), */,
       ),
     );
   }

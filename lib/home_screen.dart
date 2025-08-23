@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mabeet_app/add_out_home_screen.dart';
 import 'package:mabeet_app/add_wife_screen.dart';
+import 'package:mabeet_app/core/app_dialog.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
 
 import 'package:mabeet_app/setting_screen.dart';
@@ -38,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     },
   ); */
-  DateTime? _randStart;
+  DateTime? _rangStart;
   DateTime? _rangeEnd;
   DateTime? _selectedDay;
   @override
@@ -51,16 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => AddWifeScreen()));
-        },
-        child: Icon(Icons.add),
-      ),
+
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -78,149 +71,201 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SizedBox(width: 16),
         ],
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              'جدولي',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 5),
-            Text(
-              'My Schedule',
-              style: TextStyle(color: Colors.white, fontSize: 14),
-            ),
-          ],
-        ),
+        title: ScheduleHeaderView(),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          BlocConsumer<ScheduleCubit, ScheduleState>(
-            listener: (context, state) {
-              final schedule = BlocProvider.of<ScheduleCubit>(context).schedule;
-              colorMap = generateColorMapForMonth(
-                schedule,
-                _focusedDay.year,
-                _focusedDay.month,
-              );
-            },
-            builder: (context, state) {
-              return TableCalendar(
-                locale: 'en_US',
-                firstDay: DateTime.utc(2020, 1, 1),
-                lastDay: DateTime.utc(2030, 12, 31),
-                focusedDay: _focusedDay,
-                headerVisible: true,
-                headerStyle: HeaderStyle(
-                  formatButtonVisible: false,
-                  titleCentered: true,
-                  titleTextStyle: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                daysOfWeekStyle: DaysOfWeekStyle(
-                  dowTextFormatter: (date, locale) {
-                    const arabicDays = ['س', 'خ', 'ن', 'ث', 'ر', 'ح', 'ج'];
-                    return arabicDays[date.weekday % 7];
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: 16,
+
+              left: 16,
+              child: FloatingActionButton(
+                heroTag: 'add-wife',
+                onPressed: () {
+                  debugPrint(
+                    BlocProvider.of<ScheduleCubit>(
+                      context,
+                    ).schedule.wives.length.toString(),
+                  );
+                  if (BlocProvider.of<ScheduleCubit>(
+                        context,
+                      ).schedule.wives.length <
+                      4) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => AddWifeScreen()),
+                    );
+                  } else {
+                    AppDialogs.showError(
+                      onOk: () {},
+                      context: context,
+                      title: 'خطا',
+                      message: ' لايمكن إضافة اكثر من 4 زوجات',
+                    );
+                  }
+                },
+                child: Icon(Icons.add),
+              ),
+            ),
+            Positioned(
+              bottom: 80,
+              left: 16,
+              child: FloatingActionButton(
+                heroTag: 'add-out-home',
+                onPressed: () {
+                  if (_rangStart != null) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => AddOutHomeScreen(
+                          startDate: _rangStart!,
+                          endDate: _rangeEnd,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: Icon(Icons.airplanemode_active),
+              ),
+            ),
+
+            Column(
+              children: [
+                BlocConsumer<ScheduleCubit, ScheduleState>(
+                  listener: (context, state) {
+                    final schedule = BlocProvider.of<ScheduleCubit>(
+                      context,
+                    ).schedule;
+                    colorMap = generateColorMapForMonth(
+                      schedule,
+                      _focusedDay.year,
+                      _focusedDay.month,
+                    );
                   },
-                  weekdayStyle: TextStyle(color: Colors.black),
-                  weekendStyle: TextStyle(color: Colors.black),
-                ),
-                calendarStyle: CalendarStyle(
-                  defaultTextStyle: TextStyle(color: Colors.black),
-                  weekendTextStyle: TextStyle(color: Colors.black),
-                  todayDecoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  defaultDecoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  outsideDaysVisible: false,
-                ),
-                calendarBuilders: CalendarBuilders(
-                  defaultBuilder: (context, day, _) {
-                    if (colorMap.isEmpty) {
-                      colorMap = generateColorMapForMonth(
-                        BlocProvider.of<ScheduleCubit>(context).schedule,
-                        _focusedDay.year,
-                        _focusedDay.month,
-                      );
-                    }
-                    final color = getColorForDay(day);
-                    if (color != null) {
-                      return Container(
-                        margin: EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: color,
+                  builder: (context, state) {
+                    return TableCalendar(
+                      locale: 'en_US',
+                      firstDay: DateTime(2020, 1, 1),
+                      lastDay: DateTime(2030, 12, 31),
+                      focusedDay: _focusedDay,
+                      headerVisible: true,
+                      headerStyle: HeaderStyle(
+                        formatButtonVisible: false,
+                        titleCentered: true,
+                        titleTextStyle: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      daysOfWeekStyle: DaysOfWeekStyle(
+                        dowTextFormatter: (date, locale) {
+                          const arabicDays = [
+                            'س',
+                            'خ',
+                            'ن',
+                            'ث',
+                            'ر',
+                            'ح',
+                            'ج',
+                          ];
+                          return arabicDays[date.weekday % 7];
+                        },
+                        weekdayStyle: TextStyle(color: Colors.black),
+                        weekendStyle: TextStyle(color: Colors.black),
+                      ),
+                      calendarStyle: CalendarStyle(
+                        defaultTextStyle: TextStyle(color: Colors.black),
+                        weekendTextStyle: TextStyle(color: Colors.black),
+                        todayDecoration: BoxDecoration(
+                          color: Colors.grey[300],
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '${day.day}',
-                          style: TextStyle(color: Colors.black),
+                        defaultDecoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                      );
-                    }
-                    return null;
-                  },
-                  todayBuilder: (context, day, _) {
-                    return Container(
-                      margin: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.circular(8),
+                        outsideDaysVisible: false,
                       ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        '${day.day}',
-                        style: TextStyle(color: Colors.black),
+                      calendarBuilders: CalendarBuilders(
+                        defaultBuilder: (context, day, _) {
+                          if (colorMap.isEmpty) {
+                            colorMap = generateColorMapForMonth(
+                              BlocProvider.of<ScheduleCubit>(context).schedule,
+                              _focusedDay.year,
+                              _focusedDay.month,
+                            );
+                          }
+                          final color = getColorForDay(day.toLocal());
+                          if (color != null) {
+                            return Container(
+                              margin: EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                '${day.day}',
+                                style: TextStyle(color: Colors.black),
+                              ),
+                            );
+                          }
+                          return null;
+                        },
+                        todayBuilder: (context, day, _) {
+                          return Container(
+                            margin: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              '${day.day}',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          );
+                        },
                       ),
+                      rangeStartDay: _rangStart,
+                      rangeEndDay: _rangeEnd,
+                      rangeSelectionMode: RangeSelectionMode.toggledOn,
+                      selectedDayPredicate: (day) =>
+                          isSameDay(day.toLocal(), _selectedDay ?? _focusedDay),
+                      onDaySelected: (selectedDay, focusedDay) {
+                        setState(() {
+                          _focusedDay = focusedDay;
+                          _selectedDay = selectedDay;
+                        });
+                      },
+                      onRangeSelected: (start, end, focusedDay) {
+                        setState(() {
+                          _selectedDay = start;
+                          _focusedDay = focusedDay;
+                          _rangStart = start?.toLocal();
+                          _rangeEnd = end?.toLocal();
+                        });
+                      },
+                      onPageChanged: (focusedDay) {
+                        colorMap = {};
+                        colorMap = generateColorMapForMonth(
+                          BlocProvider.of<ScheduleCubit>(context).schedule,
+                          focusedDay.year,
+                          focusedDay.month,
+                        );
+                        setState(() {
+                          _focusedDay = focusedDay;
+                        });
+                      },
                     );
                   },
                 ),
-                rangeStartDay: _randStart,
-                rangeEndDay: _rangeEnd,
-                rangeSelectionMode: RangeSelectionMode.toggledOn,
-                selectedDayPredicate: (day) => isSameDay(day, _selectedDay!),
-                onDaySelected: (selectedDay, focusedDay) {
-                  setState(() {
-                    _focusedDay = focusedDay;
-                    _selectedDay = selectedDay;
-                  });
-                },
-                onRangeSelected: (start, end, focusedDay) {
-                  setState(() {
-                    _selectedDay = start;
-                    _focusedDay = focusedDay;
-                    _randStart = start;
-                    _rangeEnd = end;
-                  });
-                },
-                onPageChanged: (focusedDay) {
-                  colorMap = {};
-                  colorMap = generateColorMapForMonth(
-                    BlocProvider.of<ScheduleCubit>(context).schedule,
-                    focusedDay.year,
-                    focusedDay.month,
-                  );
-                  setState(() {
-                    _focusedDay = focusedDay;
-                  });
-                },
-              );
-            },
-          ),
-          const SizedBox(height: 100),
-          WifeList(),
-        ],
+                const SizedBox(height: 100),
+                WifeList(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -260,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // 3. توزيع الأيام على الزوجات حسب الدور
 
     List<DateTime> validDays = allDays
-        .where((d) => !outHomeDates.contains(d))
+        .where((d) => !outHomeDates.any((o) => isSameDay(d, o)))
         .toList();
     int index = 0;
     if (schedule.wives.isNotEmpty) {
@@ -277,6 +322,9 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     }
+    _rangStart = null;
+    _rangeEnd = null;
+    _selectedDay = null;
     // 4. تحديد لون أيام outHome
     for (var d in outHomeDates) {
       colorMap[d] = Colors.grey;
@@ -284,6 +332,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
     /// add out of home days
     return colorMap;
+  }
+}
+
+class ScheduleHeaderView extends StatelessWidget {
+  const ScheduleHeaderView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'جدولي',
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 5),
+        Text(
+          'My Schedule',
+          style: TextStyle(color: Colors.white, fontSize: 14),
+        ),
+      ],
+    );
   }
 }
 

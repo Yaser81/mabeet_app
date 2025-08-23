@@ -17,7 +17,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool usePin = false;
 
   final Map<String, TextEditingController> controllers = {};
-  late bool _isSelected = false;
+  String? _selectedWife = '';
   @override
   void initState() {
     super.initState();
@@ -46,13 +46,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         onPressed: () {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => AddWifeScreen()));
+          if (BlocProvider.of<ScheduleCubit>(context).schedule.wives.length <=
+              4) {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (context) => AddWifeScreen()));
+          } else {
+            AppDialogs.showError(
+              context: context,
+              title: 'خطا',
+              message: ' لايمكن إضافة اكثر من 4 زوجات',
+            );
+          }
         },
+        child: Icon(Icons.add),
       ),
       backgroundColor: Colors.white,
       body: Padding(
@@ -71,13 +79,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: GestureDetector(
                   onLongPress: () {
                     setState(() {
-                      _isSelected = !_isSelected;
+                      _selectedWife = _selectedWife == entry.key
+                          ? ''
+                          : entry.key;
                     });
                   },
 
                   child: Container(
                     padding: EdgeInsets.all(12),
-                    decoration: _isSelected
+                    decoration: _selectedWife == entry.key
                         ? BoxDecoration(
                             borderRadius: BorderRadius.circular(12),
                             color: Colors.green[50],
@@ -112,7 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         SizedBox(width: 10),
                         IconButton(
-                          onPressed: !_isSelected
+                          onPressed: _selectedWife != entry.key
                               ? null
                               : () {
                                   AppDialogs.confirmAction(

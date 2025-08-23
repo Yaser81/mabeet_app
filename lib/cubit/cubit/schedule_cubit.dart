@@ -42,7 +42,8 @@ class ScheduleCubit extends Cubit<ScheduleState> {
   }
 
   void addOuthome(OutHomeModel outDuration) {
-    schedule.outHomeDays['${outDuration.from.year}${outDuration.from.month}'] =
+    emit(ScheduleProcess());
+    schedule.outHomeDays['${outDuration.from.year}${outDuration.from.month}${outDuration.from.day}'] =
         outDuration;
     emit(ScheduleUpdate());
   }
