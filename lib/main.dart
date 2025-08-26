@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mabeet_app/add_out_home_screen.dart';
 import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
+import 'package:mabeet_app/features/splash/presentation/views/splash_view.dart';
 import 'package:mabeet_app/home_screen.dart';
 
 import 'models/models.dart';
@@ -90,7 +91,7 @@ class MyApp extends StatelessWidget {
 
           // تعيين الخط لعناصر واجهة المستخدم الثانوية
         ),
-        home: HomeScreen() /*   AddOutHomeScreen(
+        home: SplashView() /*   AddOutHomeScreen(
           startDate: DateTime(2025, 04, 05),
           endDate: DateTime(2025, 11, 06),
         ), */,
