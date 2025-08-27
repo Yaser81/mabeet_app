@@ -1,122 +1,311 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:mabeet_app/add_out_home_screen.dart';
+import 'package:mabeet_app/cubit/cubit/schedule_cubit.dart';
+import 'package:mabeet_app/features/splash/presentation/views/splash_view.dart';
+import 'package:mabeet_app/home_screen.dart';
+
+import 'models/models.dart';
 
 void main() {
-  runApp(const MyApp());
+  final ScheduleModel scheduleModel = ScheduleModel(
+    wives: {
+      'خلود': WifeModel(name: 'خلود', color: Color(0xFF4FD1C5), days: 4),
+      /*'وردة': WifeModel(name: 'وردة', color: Color(0xFFF597AD), days: 5),
+      'حنان': WifeModel(name: 'حنان', color: Color(0xFFB4A9FF), days: 1), */
+    },
+    outHomeDays: {
+      /*  "2025-07": OutHomeModel(
+        id: "2025-07",
+        from: DateTime(2024, 4, 1),
+        to: DateTime(2024, 4, 3),
+      ),
+      "2024-04": OutHomeModel(
+        id: '2024-04',
+        from: DateTime(2024, 4, 15),
+        to: DateTime(2024, 4, 30),
+      ), */
+    },
+  );
+  runApp(MyApp(scheduleModel: scheduleModel));
 }
+
+class MyApp extends StatelessWidget {
+  final ScheduleModel scheduleModel;
+  MyApp({super.key, required this.scheduleModel});
+
+  final colorScheme = ColorScheme.fromSeed(
+    seedColor: const Color.fromARGB(255, 91, 210, 198),
+  );
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => ScheduleCubit(scheduleModel)),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        locale: const Locale('ar'),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: [
+          Locale('en'), // English
+          Locale('ar'), // Spanish
+        ],
+        title: 'تطبيق مبيت',
+        theme: ThemeData(
+          useMaterial3: true, // <== ضروري لتفعيل الألوان الجديدة
+          colorScheme: colorScheme,
+          appBarTheme: AppBarTheme(
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+          ),
+          // primaryColor: Color.fromARGB(255, 2, 22, 151),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primary,
+              foregroundColor: colorScheme.onPrimary,
+            ),
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            foregroundColor: colorScheme.onPrimary,
+            backgroundColor: colorScheme.primary,
+          ),
+          iconButtonTheme: IconButtonThemeData(
+            style: IconButton.styleFrom(foregroundColor: colorScheme.primary),
+          ),
+          // تعيين الخط الافتراضي للتطبيق كله
+          textTheme: GoogleFonts.notoNaskhArabicTextTheme(
+            Theme.of(context).textTheme,
+          ),
+
+          // يمكنك أيضاً تعيين عناصر واجهة المستخدم بشكل منفصل
+          primaryTextTheme: GoogleFonts.notoNaskhArabicTextTheme(
+            Theme.of(context).primaryTextTheme,
+          ),
+
+          // تعيين الخط لعناصر واجهة المستخدم الثانوية
+        ),
+        home: SplashView() /*   AddOutHomeScreen(
+          startDate: DateTime(2025, 04, 05),
+          endDate: DateTime(2025, 11, 06),
+        ), */,
+      ),
+    );
+  }
+}
+
+/* import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mabeet_app/widgets/custom_text_from_field.dart';
+
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('ar'),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en'), // English
+        Locale('ar'), // Arabic
+      ],
+      theme: ThemeData(colorSchemeSeed: Colors.blue),
+      home: const AddNewUserScreen(title: 'تسجيل مستخدم جديد'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+class AddNewUserScreen extends StatefulWidget {
   final String title;
 
+  const AddNewUserScreen({super.key, required this.title});
+
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<AddNewUserScreen> createState() => _AddNewUserScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _AddNewUserScreenState extends State<AddNewUserScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
+  late String _fullName;
+  late String _email;
+  late String _password;
+  late int _age;
+  late String _aboutYou;
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CustomTextFormField(
+                  keyboardType: TextInputType.text,
+                  labelText: 'الاسم الكامل',
+                  hintText: 'أدخل اسمك الكامل',
+                  perfixIcon: Icon(
+                    Icons.person,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'هذا الحقل مطلوب';
+                    }
+                    return null;
+                  },
+                  onSaved: (newValue) => _fullName = newValue!,
+                ),
+                CustomTextFormField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'البريد الإلكتروني مطلوب';
+                    }
+                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                      return 'البريد الالكتروني غير صالح';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.emailAddress,
+                  labelText: 'البريد الإلكتروني',
+
+                  hintText: 'أدخل البريد الإلكتروني',
+                  perfixIcon: Icon(
+                    Icons.email,
+                    color: Theme.of(context).primaryColor,
+                  ),
+
+                  onSaved: (newValue) {
+                    _email = newValue!;
+                  },
+                ),
+                CustomTextFormField(
+                  labelText: 'كلمة المرور',
+
+                  keyboardType: TextInputType.text,
+                  obscureText: true,
+                  perfixIcon: Icon(
+                    Icons.password,
+                    color: Theme.of(context).primaryColor,
+                  ),
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'كلمة المرور مطلوبة';
+                    }
+                    if (value.length < 6) {
+                      return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    }
+                  },
+                  onSaved: (newValue) => _password = newValue!,
+                ),
+                CustomTextFormField(
+                  labelText: 'العمر',
+
+                  keyboardType: TextInputType.number,
+                  perfixIcon: Icon(
+                    Icons.elderly,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  validator: (value) {
+                    if (int.tryParse(value!) == null) {
+                      return ' العمر يجب ان يكون رقم';
+                    }
+                    return null;
+                  },
+                  onSaved: (newValue) => _age = int.parse(newValue!),
+                ),
+
+                CustomTextFormField(
+                  keyboardType: TextInputType.multiline,
+                  maxLines: 5,
+                  labelText: 'نبذة عنك ',
+                  perfixIcon: Icon(
+                    Icons.description,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  onSaved: (newValue) => _aboutYou = newValue!,
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text('حفظ', style: TextStyle(fontSize: 18)),
+                      onPressed: () {
+                        if (!_formKey.currentState!.validate()) {
+                          debugPrint('validation error');
+                          return;
+                        }
+                        _formKey.currentState!.save();
+                        showError('''
+            تم الحفظ بنجاح
+            الاسم: $_fullName
+            البريد الإلكتروني: $_email
+            كلمة المرور: $_password
+            العمر: $_age
+            نبذة عنك: $_aboutYou
+             ''');
+                      },
+                    ),
+                    SizedBox(width: 5),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text('إلغاء', style: TextStyle(fontSize: 18)),
+                      onPressed: () {
+                        _formKey.currentState!.reset();
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  void showError(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 }
+ */
