@@ -22,22 +22,7 @@ class _SplashBodyViewState extends State<SplashBodyView>
   @override
   void initState() {
     super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 2),
-    );
-    _slidingAnimation = Tween<Offset>(begin: Offset(0, 1), end: Offset.zero)
-        .animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeOut, // حركة انسيابية
-          ),
-        );
-    // الشفافية (Fade) من 0 → 1
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
-    );
-    _animationController.forward();
+    initAnimations();
   }
 
   @override
@@ -59,9 +44,9 @@ class _SplashBodyViewState extends State<SplashBodyView>
       ),
       nextScreen: const HomeScreen(),
       splashIconSize: 350,
-      duration: 2500, // الوقت بالملي ثانية
+      duration: 250, // الوقت بالملي ثانية
       splashTransition: SplashTransition.scaleTransition,
-      pageTransitionType: PageTransitionType.fade,
+      pageTransitionType: PageTransitionType.rightToLeftWithFade,
       backgroundColor: Colors.white,
     );
   }
@@ -70,5 +55,24 @@ class _SplashBodyViewState extends State<SplashBodyView>
   void dispose() {
     _animationController.dispose();
     super.dispose();
+  }
+
+  void initAnimations() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: 2),
+    );
+    _slidingAnimation = Tween<Offset>(begin: Offset(0, 1), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOut, // حركة انسيابية
+          ),
+        );
+    // الشفافية (Fade) من 0 → 1
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
+    );
+    _animationController.forward();
   }
 }
